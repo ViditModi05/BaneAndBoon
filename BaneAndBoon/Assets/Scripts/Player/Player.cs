@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Runtime.CompilerServices;
 using UnityEngine;
@@ -14,6 +15,7 @@ public class Player : MonoBehaviour
     public SpriteRenderer sr {  get; private set; }
     public Animator animator { get; private set; }
     public Rigidbody2D rb {  get; private set; }
+    public SwitchManager switchManager { get; private set; }
 
     [Header("State Machine")]
     public PlayerStateMachine stateMachine { get; private set; }
@@ -21,6 +23,7 @@ public class Player : MonoBehaviour
     [Header("Movement")]
     public float moveSpeed = 12f;
     public float jumpForce = 7f;
+    public bool isMoving;
 
     [Header("Flip")]
     public int direction { get; private set; } = 1;
@@ -29,9 +32,12 @@ public class Player : MonoBehaviour
     [Header("Shadow State Settings")]
     public bool inShadowState;
     public bool isBusy { get; private set; }
+    public float shadowStateTimer;
+    public float shadowStateTime = 5f;
 
     [Header("Dash")]
     [SerializeField] private float dashCooldown;
+    public bool isDashing;
     public float dashSpeed;
     public float dashDuration;
     private float dashCooldownTimer;
@@ -43,6 +49,9 @@ public class Player : MonoBehaviour
 
     [Header("Blocks")]
     public Transform block {  get; private set; }
+
+    [Header("Key")]
+    public bool hasKey;
     #region States
     public PlayerIdleState idleState { get; private set; }
     public PlayerMoveState moveState { get; private set; }
@@ -56,11 +65,15 @@ public class Player : MonoBehaviour
     public PlayerShadowJumpState shadowJump { get; private set; }
     public PlayerShadowAirState shadowAir {  get; private set; }
     public PlayerMoveBlockState moveBlock { get; private set; }
+    public PlayerShadowWallJumpState shadowWallJump { get; private set; }
+    public PlayerShadowWallSlideState shadowWallSlide { get; private set; }
     #endregion
 
     private void Awake()
     {
+        
         rb = GetComponent<Rigidbody2D>();
+        switchManager = SwitchManager.instance;
         stateMachine = new PlayerStateMachine();
 
         idleState = new PlayerIdleState(this, stateMachine, "Idle");
@@ -75,6 +88,9 @@ public class Player : MonoBehaviour
         shadowJump = new PlayerShadowJumpState(this, stateMachine, "ShadowJump");
         shadowAir = new PlayerShadowAirState(this, stateMachine, "ShadowJump");
         moveBlock = new PlayerMoveBlockState(this, stateMachine, "Move");
+        shadowWallJump = new PlayerShadowWallJumpState(this, stateMachine, "ShadowJump");
+        shadowWallSlide = new PlayerShadowWallSlideState(this, stateMachine, "ShadowWallSlide");
+
 
     }
 
@@ -84,17 +100,36 @@ public class Player : MonoBehaviour
         sr = GetComponentInChildren<SpriteRenderer>();
         stateMachine.Initialize(idleState);
         currentJumps = maxJumps;
+
+
     }
 
     private void Update()
     {
         stateMachine.currentState.UpdateState();
         dashCooldownTimer -= Time.deltaTime;
+        if(transform.position.y < -10f)
+        {
+            Death();
+        }
         DashInput();
         FlipController();
         if (isGrounded())
         {
             currentJumps = maxJumps;
+        }
+        if(inShadowState && shadowStateTimer != shadowStateTime)
+        {
+            shadowStateTimer += Time.deltaTime;
+        }
+    }
+
+    private void Death()
+    {
+        Vector2 respawnPosition = Checkpoint_Manager.instance.GetCheckpoint();
+        if (respawnPosition != Vector2.zero) 
+        {
+            transform.position = respawnPosition;
         }
     }
 
@@ -117,6 +152,7 @@ public class Player : MonoBehaviour
                 dashDirection = direction;
             }
             stateMachine.ChangeState(dashState);
+            isDashing = true;
         }
     }
 
@@ -141,7 +177,7 @@ public class Player : MonoBehaviour
         Gizmos.DrawLine(wallCheck.position, new Vector3(wallCheck.position.x + +wallCheckDistance, wallCheck.position.y));
     }
 
-    private void Flip()
+    public void Flip()
     {
         direction *= -1;
         isFacingRight = !isFacingRight;
@@ -165,5 +201,13 @@ public class Player : MonoBehaviour
         isBusy = true;
         yield return new WaitForSeconds(_seconds);
         isBusy = false;
+    }
+
+    public void MoveWithBlock(float blockMovement)
+    {
+        if (!isMoving)
+        {
+            rb.linearVelocity = new Vector2(blockMovement, rb.linearVelocity.y);
+        }
     }
 }

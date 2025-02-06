@@ -3,7 +3,8 @@
 --- !u!78 &1
 TagManager:
   serializedVersion: 3
-  tags: []
+  tags:
+  - Ground
   layers:
   - Default
   - TransparentFX
@@ -13,8 +14,8 @@ TagManager:
   - UI
   - Ground
   - MovableBlock
-  - 
-  - 
+  - MovingBlockCollider
+  - Player
   - 
   - 
   - 
@@ -38,14 +39,26 @@ TagManager:
   - 
   - 
   m_SortingLayers:
+  - name: Background
+    uniqueID: 1088667029
+    locked: 0
+  - name: Midground
+    uniqueID: 829036641
+    locked: 0
+  - name: Foreground
+    uniqueID: 3013863299
+    locked: 0
   - name: Default
     uniqueID: 0
     locked: 0
-  - name: Ground
-    uniqueID: 2314681871
-    locked: 0
   - name: Player
     uniqueID: 262937117
+    locked: 0
+  - name: Wall
+    uniqueID: 4075252007
+    locked: 0
+  - name: Ground
+    uniqueID: 2314681871
     locked: 0
   m_RenderingLayers:
   - Default

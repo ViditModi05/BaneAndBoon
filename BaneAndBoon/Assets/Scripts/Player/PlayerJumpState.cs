@@ -21,9 +21,22 @@ public class PlayerJumpState : PlayerState
     public override void UpdateState()
     {
         base.UpdateState();
-        if(rb.linearVelocity.y < 0)
+        if (Input.GetKeyDown(KeyCode.Tab) && !player.isGrounded() && !player.inShadowState && !player.isBusy && !player.isDashing && shadowStateSwitchTimer < 0)
+        {
+            shadowStateSwitchTimer = shadowStateDelay;
+            player.inShadowState = true;
+            player.StartCoroutine("BusyFor", .1f);
+            player.switchManager.Invoke("StartSwitch", 0);
+            stateMachine.ChangeState(player.shadowState);
+        }
+        if (rb.linearVelocity.y < 0)
         {
             stateMachine.ChangeState(player.airState);
+        }
+        if (Input.GetKeyDown(KeyCode.Space) && player.CanJump())
+        {
+            rb.linearVelocity = new Vector2(rb.linearVelocity.x, player.jumpForce);
+            player.UseJump();
         }
 
     }

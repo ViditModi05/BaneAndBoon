@@ -25,9 +25,22 @@ public class PlayerShadowGroundedState : PlayerState
             stateMachine.ChangeState(player.shadowJump);
         }
 
-        if (Input.GetKeyDown(KeyCode.Tab) && player.inShadowState)
+        if (player.shadowStateTime <= player.shadowStateTimer)
         {
+            player.shadowStateTimer = 0;
+            shadowStateSwitchTimer = shadowStateDelay;
             player.inShadowState = false;
+            player.StartCoroutine("BusyFor", .1f);
+            player.switchManager.Invoke("SwitchfromShadowtoLight", 0);
+            stateMachine.ChangeState(player.idleState);
+        }
+
+        if (Input.GetKeyDown(KeyCode.Tab) && player.isGrounded() && player.inShadowState && !player.isBusy && shadowStateSwitchTimer < 0)
+        {
+            shadowStateSwitchTimer = shadowStateDelay;
+            player.inShadowState = false;
+            player.StartCoroutine("BusyFor", .1f);
+            player.switchManager.Invoke("SwitchfromShadowtoLight", 0);
             stateMachine.ChangeState(player.idleState);
         }
     }

@@ -6,7 +6,10 @@ public class PlayerState
     protected PlayerStateMachine stateMachine;
     protected Player player; 
     private string animBoolName;
+    protected float shadowStateDelay = .1f;
+    protected float shadowStateSwitchTimer;
     protected float stateTimer;
+    
 
     [Header("Movement")]
     protected float xInput;
@@ -38,6 +41,7 @@ public class PlayerState
         xInput = Input.GetAxisRaw("Horizontal");
         yInput = Input.GetAxisRaw("Vertical");
         player.animator.SetFloat("yVelocity", rb.linearVelocity.y);
-        stateTimer -= Time.deltaTime;    
+        stateTimer -= Time.deltaTime;  
+        shadowStateSwitchTimer -= Time.deltaTime;
     }
 }

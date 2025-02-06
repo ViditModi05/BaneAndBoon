@@ -10,11 +10,13 @@ public class PlayerMoveState : PlayerGroundedState
     public override void EnterState()
     {
         base.EnterState();
+        player.isMoving = true;
     }
 
     public override void ExitState()
     {
         base.ExitState();
+        player.isMoving = false;
     }
 
     public override void UpdateState()

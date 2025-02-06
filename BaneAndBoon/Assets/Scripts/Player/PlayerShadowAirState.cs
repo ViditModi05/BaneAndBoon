@@ -23,10 +23,26 @@ public class PlayerShadowAirState : PlayerState
         {
             stateMachine.ChangeState(player.shadowState);
         }
-        if (Input.GetKeyDown(KeyCode.Tab) && player.inShadowState)
+        if (Input.GetKeyDown(KeyCode.Tab) && !player.isGrounded() && player.inShadowState && !player.isBusy && shadowStateSwitchTimer < 0)
         {
+            shadowStateSwitchTimer = shadowStateDelay;
             player.inShadowState = false;
+            player.StartCoroutine("BusyFor", .1f);
+            player.switchManager.Invoke("SwitchfromShadowtoLight", 0);
             stateMachine.ChangeState(player.idleState);
+        }
+        if (player.shadowStateTime <= player.shadowStateTimer)
+        {
+            player.shadowStateTimer = 0;
+            shadowStateSwitchTimer = shadowStateDelay;
+            player.inShadowState = false;
+            player.StartCoroutine("BusyFor", .1f);
+            player.switchManager.Invoke("SwitchfromShadowtoLight", 0);
+            stateMachine.ChangeState(player.idleState);
+        }
+        if (player.isWallDetected())
+        {
+            stateMachine.ChangeState(player.shadowWallSlide);
         }
         if (xInput != 0)
         {

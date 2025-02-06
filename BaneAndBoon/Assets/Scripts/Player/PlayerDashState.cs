@@ -16,6 +16,8 @@ public class PlayerDashState : PlayerState
     {
         base.ExitState();
         rb.linearVelocity = new Vector2(0 , rb.linearVelocity.y);
+        player.StartCoroutine("BusyFor", .15f);
+        player.isDashing = false;
     }
 
     public override void UpdateState()

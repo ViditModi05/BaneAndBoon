@@ -20,6 +20,23 @@ public class PlayerShadowJumpState : PlayerState
     public override void UpdateState()
     {
         base.UpdateState();
+        if (Input.GetKeyDown(KeyCode.Tab) && !player.isGrounded() && player.inShadowState && !player.isBusy && shadowStateSwitchTimer < 0)
+        {
+            shadowStateSwitchTimer = shadowStateDelay;
+            player.inShadowState = false;
+            player.StartCoroutine("BusyFor", .1f);
+            player.switchManager.Invoke("SwitchfromShadowtoLight", 0);
+            stateMachine.ChangeState(player.idleState);
+        }
+        if (player.shadowStateTime <= player.shadowStateTimer)
+        {
+            player.shadowStateTimer = 0;
+            shadowStateSwitchTimer = shadowStateDelay;
+            player.inShadowState = false;
+            player.StartCoroutine("BusyFor", .1f);
+            player.switchManager.Invoke("SwitchfromShadowtoLight", 0);
+            stateMachine.ChangeState(player.idleState);
+        }
         if (rb.linearVelocity.y < 0)
         {
             stateMachine.ChangeState(player.shadowAir);

@@ -10,6 +10,7 @@ public class PlayerShadowState : PlayerShadowGroundedState
     {
         base.EnterState();
         rb.linearVelocity = new Vector2(0, 0);
+
     }
 
     public override void ExitState()

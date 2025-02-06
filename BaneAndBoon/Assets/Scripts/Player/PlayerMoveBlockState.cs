@@ -40,6 +40,11 @@ public class PlayerMoveBlockState : PlayerState
         {
             stateMachine.ChangeState(player.idleState);
         }
+
+        if(xInput == 0)
+        {
+            stateMachine.ChangeState(player.idleState);
+        }
     }
 
 

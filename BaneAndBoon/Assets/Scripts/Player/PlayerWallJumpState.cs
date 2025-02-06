@@ -22,6 +22,12 @@ public class PlayerWallJumpState : PlayerState
     {
         base.UpdateState();
 
+        if (Input.GetKeyDown(KeyCode.Space) && player.CanJump())
+        {
+            rb.linearVelocity = new Vector2(rb.linearVelocity.x, player.jumpForce);
+            player.UseJump();
+        }
+
         if (stateTimer < 0)
         {
             stateMachine.ChangeState(player.airState);

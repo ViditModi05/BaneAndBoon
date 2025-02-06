@@ -24,11 +24,13 @@ public class PlayerAirState : PlayerState
             stateMachine.ChangeState(player.idleState);
         }
 
-        if (Input.GetKeyDown(KeyCode.Tab) && !player.isGrounded() && !player.inShadowState)
+        if (Input.GetKeyDown(KeyCode.Tab) && !player.isGrounded() && !player.inShadowState && !player.isBusy && !player.isDashing && shadowStateSwitchTimer < 0)
         {
+            shadowStateSwitchTimer = shadowStateDelay;
             player.inShadowState = true;
-            stateMachine.ChangeState(player.shadowState);
             player.StartCoroutine("BusyFor", .1f);
+            player.switchManager.Invoke("StartSwitch", 0);
+            stateMachine.ChangeState(player.shadowState);
         }
 
         if (player.isWallDetected())
