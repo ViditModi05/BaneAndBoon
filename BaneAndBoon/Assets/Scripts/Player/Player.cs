@@ -52,6 +52,14 @@ public class Player : MonoBehaviour
 
     [Header("Key")]
     public bool hasKey;
+
+    [Header("Auido Events")]
+    public System.Action onMove;
+    public System.Action stopMove;
+    public System.Action onJump;
+    public System.Action onDash;
+
+
     #region States
     public PlayerIdleState idleState { get; private set; }
     public PlayerMoveState moveState { get; private set; }
@@ -124,7 +132,7 @@ public class Player : MonoBehaviour
         }
     }
 
-    private void Death()
+    public void Death()
     {
         Vector2 respawnPosition = Checkpoint_Manager.instance.GetCheckpoint();
         if (respawnPosition != Vector2.zero) 

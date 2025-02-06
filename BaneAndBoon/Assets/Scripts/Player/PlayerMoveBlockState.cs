@@ -33,6 +33,10 @@ public class PlayerMoveBlockState : PlayerState
             Vector3 blockMove = new Vector3(1, 0, 0);
             Rigidbody2D blockRb = player.block.GetComponent<Rigidbody2D>();
             blockRb.linearVelocity = new Vector2(xInput, 0);
+            if (player.onMove != null)
+            {
+                player.onMove();
+            }
 
         }
 

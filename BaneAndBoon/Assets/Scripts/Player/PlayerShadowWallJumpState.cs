@@ -11,6 +11,10 @@ public class PlayerShadowWallJumpState : PlayerState
         base.EnterState();
         stateTimer = .4f;
         rb.linearVelocity = new Vector2(5 * -player.direction, player.jumpForce);
+        if (player.onJump != null)
+        {
+            player.onJump();
+        }
     }
 
     public override void ExitState()

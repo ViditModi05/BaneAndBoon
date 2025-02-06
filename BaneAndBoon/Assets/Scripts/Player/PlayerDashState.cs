@@ -10,6 +10,10 @@ public class PlayerDashState : PlayerState
     {
         base.EnterState();
         stateTimer = player.dashDuration;
+        if(player.onDash != null)
+        {
+            player.onDash();
+        }
     }
 
     public override void ExitState()

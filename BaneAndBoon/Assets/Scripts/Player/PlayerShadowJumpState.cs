@@ -10,6 +10,10 @@ public class PlayerShadowJumpState : PlayerState
     {
         base.EnterState();
         rb.linearVelocity = new Vector2(rb.linearVelocity.x, player.jumpForce);
+        if (player.onJump != null)
+        {
+            player.onJump();
+        }
     }
 
     public override void ExitState()
@@ -23,6 +27,7 @@ public class PlayerShadowJumpState : PlayerState
         if (Input.GetKeyDown(KeyCode.Tab) && !player.isGrounded() && player.inShadowState && !player.isBusy && shadowStateSwitchTimer < 0)
         {
             shadowStateSwitchTimer = shadowStateDelay;
+            player.shadowStateTimer = 0;
             player.inShadowState = false;
             player.StartCoroutine("BusyFor", .1f);
             player.switchManager.Invoke("SwitchfromShadowtoLight", 0);

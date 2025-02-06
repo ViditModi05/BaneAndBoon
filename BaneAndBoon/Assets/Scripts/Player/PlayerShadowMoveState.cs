@@ -10,12 +10,20 @@ public class PlayerShadowMoveState : PlayerShadowGroundedState
     {
         base.EnterState();
         player.isMoving = true;
+        if(player.onMove != null)
+        {
+            player.onMove();
+        }
     }
 
     public override void ExitState()
     {
         base.ExitState();
         player.isMoving = false;
+        if(player.stopMove != null)
+        {
+            player.stopMove();
+        }
     }
 
     public override void UpdateState()

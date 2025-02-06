@@ -11,6 +11,11 @@ public class PlayerJumpState : PlayerState
         base.EnterState();
         player.UseJump();
         rb.linearVelocity = new Vector2(rb.linearVelocity.x, player.jumpForce);
+        if(player.onJump != null)
+        {
+            player.onJump();
+        }
+        
     }
 
     public override void ExitState()
@@ -37,6 +42,10 @@ public class PlayerJumpState : PlayerState
         {
             rb.linearVelocity = new Vector2(rb.linearVelocity.x, player.jumpForce);
             player.UseJump();
+            if (player.onJump != null)
+            {
+                player.onJump();
+            }
         }
 
     }

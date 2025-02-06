@@ -45,6 +45,10 @@ public class PlayerAirState : PlayerState
         {
             rb.linearVelocity = new Vector2(rb.linearVelocity.x, player.jumpForce);
             player.UseJump();
+            if (player.onJump != null)
+            {
+                player.onJump();
+            }
         }
     }
 }

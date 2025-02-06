@@ -4,6 +4,10 @@ public class MovingBlocks : MonoBehaviour
 {
     [Header("Refs")]
     [SerializeField] private float moveSpeed = .1f;
+    [SerializeField] private float moveDistance = 5f;
+    [SerializeField] private Transform startPos;
+    [SerializeField] private Transform targetPos;
+    private Transform targetPoint;
     private BoxCollider2D boxCollider;
     private SpriteRenderer sr;
     private float moveDirection = -1;
@@ -11,37 +15,32 @@ public class MovingBlocks : MonoBehaviour
 
     private void Start()
     {
-        sr = GetComponent<SpriteRenderer>();    
+        sr = GetComponent<SpriteRenderer>();
+        targetPoint = targetPos;
     }
 
     private void Update()
     {
-        transform.Translate(moveDirection * moveSpeed * Time.deltaTime,0,0);
+        transform.position = Vector2.MoveTowards(transform.position, targetPoint.position, moveSpeed * Time.deltaTime);
 
-        if(Player_Manager.instance.player.inShadowState)
+        // If the block reaches the target, switch direction
+        if (Vector2.Distance(transform.position, targetPoint.position) < 0.1f)
         {
-            Color color = sr.color;
-            color.a = 0;
+            moveDirection *= -1;
+            targetPoint = (targetPoint == targetPos) ? startPos : targetPos;
         }
-        else
+
+        if (onBlock)
         {
-            Color color = sr.color;
-            color.a = 100;
-        }
-        if(onBlock)
-        {
-            Player_Manager.instance.player.MoveWithBlock(moveDirection * moveSpeed);
+            float direction = (targetPoint.position.x > transform.position.x) ? 1 : -1;
+            Player_Manager.instance.player.MoveWithBlock(moveSpeed * direction);
         }
         
     }
 
     private void OnCollisionEnter2D(Collision2D collision)
     {
-        Debug.Log("Collision");
-        if(collision.gameObject.CompareTag("Ground"))
-        {
-            moveDirection *= -1;
-        }
+        Debug.Log("Collision"); 
         if(collision.gameObject.CompareTag("Player"))
         {
             onBlock = true;

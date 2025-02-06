@@ -11,12 +11,21 @@ public class PlayerMoveState : PlayerGroundedState
     {
         base.EnterState();
         player.isMoving = true;
+        if (player.onMove != null)
+        {
+            player.onMove();
+        }
+
     }
 
     public override void ExitState()
     {
         base.ExitState();
         player.isMoving = false;
+        if(player.stopMove != null)
+        {
+            player.stopMove();
+        }
     }
 
     public override void UpdateState()
@@ -24,7 +33,8 @@ public class PlayerMoveState : PlayerGroundedState
         base.UpdateState();
         rb.linearVelocity = new Vector2(xInput * player.moveSpeed, rb.linearVelocity.y);
 
-        if(xInput == 0)
+
+        if (xInput == 0)
         {
             stateMachine.ChangeState(player.idleState);
         }

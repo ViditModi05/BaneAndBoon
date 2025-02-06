@@ -12,6 +12,7 @@ public class SwitchManager : MonoBehaviour
     [Header("Transition Settings")]
     [SerializeField] private float transitionDuration = 1f;
     private bool isTransitioning = false;
+    public System.Action onSwitch;
 
     public static SwitchManager instance;
 
@@ -38,12 +39,20 @@ public class SwitchManager : MonoBehaviour
     {
         if(!isTransitioning) 
             StartCoroutine(SwitchBackground(false));
+        if(onSwitch != null)
+        {
+            onSwitch();
+        }
     }
 
     public void StartSwitch()
     {
         if(!isTransitioning)
             StartCoroutine(SwitchBackground(true));
+        if (onSwitch != null)
+        {
+            onSwitch();
+        }
     }
 
     private IEnumerator SwitchBackground(bool toShadow)
