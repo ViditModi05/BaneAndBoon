@@ -42,6 +42,10 @@ public class PlayerShadowJumpState : PlayerState
             player.switchManager.Invoke("SwitchfromShadowtoLight", 0);
             stateMachine.ChangeState(player.idleState);
         }
+        if (xInput != 0)
+        {
+            rb.linearVelocity = new Vector2(player.moveSpeed * .8f * xInput, rb.linearVelocity.y);
+        }
         if (rb.linearVelocity.y < 0)
         {
             stateMachine.ChangeState(player.shadowAir);

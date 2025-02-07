@@ -1,5 +1,7 @@
 using System.Collections;
 using UnityEngine;
+using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 
 public class SwitchManager : MonoBehaviour
 {
@@ -11,8 +13,18 @@ public class SwitchManager : MonoBehaviour
 
     [Header("Transition Settings")]
     [SerializeField] private float transitionDuration = 1f;
+    [SerializeField] private float warningDuration = 5f;
+    [SerializeField] private float warningStartDelay = 3f;
+    [SerializeField] private Image warningOverlay;
     private bool isTransitioning = false;
+    private bool isShadowMode = false;
+    private Coroutine warningCoroutine = null;
     public System.Action onSwitch;
+
+    [Header("Pause")]
+    [SerializeField] private GameObject pausePanel;
+    private bool isPaused = false;
+
 
     public static SwitchManager instance;
 
@@ -28,18 +40,39 @@ public class SwitchManager : MonoBehaviour
         }
     }
 
+    private void Start()
+    {
+        Time.timeScale = 1f;
+    }
 
     private void Update()
     {
+        if (Input.GetKeyUp(KeyCode.Escape))
+        {
+            TogglePause();
+        }
 
 
     }
 
+    public void TogglePause()
+    {
+        isPaused = !isPaused;
+        pausePanel.SetActive(isPaused);
+        Time.timeScale = isPaused ? 0f : 1f;
+    }
+
+
     public void SwitchfromShadowtoLight()
     {
-        if(!isTransitioning) 
+        if (!isTransitioning)
+        {
+            isShadowMode = false;
+            FadeOutWarning();
             StartCoroutine(SwitchBackground(false));
-        if(onSwitch != null)
+        }
+
+        if (onSwitch != null)
         {
             onSwitch();
         }
@@ -47,8 +80,12 @@ public class SwitchManager : MonoBehaviour
 
     public void StartSwitch()
     {
-        if(!isTransitioning)
+        if (!isTransitioning)
+        {
+            isShadowMode = true;
             StartCoroutine(SwitchBackground(true));
+        }
+
         if (onSwitch != null)
         {
             onSwitch();
@@ -83,7 +120,55 @@ public class SwitchManager : MonoBehaviour
         lightbgParent.SetActive(!toShadow);
         shadowbgParent.SetActive(toShadow);
 
+        if (toShadow)
+        {
+            if (warningCoroutine != null)
+                StopCoroutine(warningCoroutine);
+            warningCoroutine = StartCoroutine(ShowWarningEffect());
+
+        }
+        else
+        {
+            StartCoroutine(FadeOutWarning());
+        }
+
         isTransitioning = false;
+    }
+
+    private IEnumerator ShowWarningEffect()
+    {
+        yield return new WaitForSeconds(warningStartDelay);
+        if (!isShadowMode)
+            yield break;
+        float elapsedTime = 0f;
+        while (elapsedTime < warningDuration)
+        {
+            if (!isShadowMode)
+            {
+                FadeOutWarning();
+                yield break;
+            }
+            float alpha = elapsedTime / warningDuration;
+            warningOverlay.color = new Color(1, 0, 0, alpha * 0.5f);
+            elapsedTime += Time.deltaTime;
+            yield return null;
+        }
+
+    }
+    private IEnumerator FadeOutWarning()
+    {
+        float elapsedTime = 0f;
+        float startAlpha = warningOverlay.color.a;
+
+        while (elapsedTime < 1f) // Fade out quickly
+        {
+            float alpha = Mathf.Lerp(startAlpha, 0f, elapsedTime / 1f);
+            warningOverlay.color = new Color(1, 0, 0, alpha);
+            elapsedTime += Time.deltaTime;
+            yield return null;
+        }
+
+        warningOverlay.color = new Color(1, 0, 0, 0);
     }
 
     private void SetLayerAlpha(SpriteRenderer[] layers, float alpha)
@@ -94,5 +179,15 @@ public class SwitchManager : MonoBehaviour
             color.a = alpha;
             sr.color = color;
         }
+    }
+
+    public void RestartScene()
+    {
+        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+    }
+
+    public void MainMenu()
+    {
+        SceneManager.LoadScene(0);
     }
 }

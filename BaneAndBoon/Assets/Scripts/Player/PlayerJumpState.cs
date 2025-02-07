@@ -34,6 +34,10 @@ public class PlayerJumpState : PlayerState
             player.switchManager.Invoke("StartSwitch", 0);
             stateMachine.ChangeState(player.shadowState);
         }
+        if (xInput != 0)
+        {
+            rb.linearVelocity = new Vector2(player.moveSpeed * .8f * xInput, rb.linearVelocity.y);
+        }
         if (rb.linearVelocity.y < 0)
         {
             stateMachine.ChangeState(player.airState);
