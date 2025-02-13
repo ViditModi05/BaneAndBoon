@@ -25,6 +25,9 @@ public class SwitchManager : MonoBehaviour
     [SerializeField] private GameObject pausePanel;
     private bool isPaused = false;
 
+    [Header("UI Elements")]
+    [SerializeField] private Slider shadowTimerBar;
+
 
     public static SwitchManager instance;
 
@@ -69,6 +72,7 @@ public class SwitchManager : MonoBehaviour
         {
             isShadowMode = false;
             FadeOutWarning();
+            shadowTimerBar.gameObject.SetActive(false);
             StartCoroutine(SwitchBackground(false));
         }
 
@@ -83,6 +87,9 @@ public class SwitchManager : MonoBehaviour
         if (!isTransitioning)
         {
             isShadowMode = true;
+            shadowTimerBar.gameObject.SetActive(true);
+            shadowTimerBar.value = 1f; // Start full
+            StartCoroutine(DepleteShadowBar());
             StartCoroutine(SwitchBackground(true));
         }
 
@@ -133,6 +140,27 @@ public class SwitchManager : MonoBehaviour
         }
 
         isTransitioning = false;
+    }
+
+    private IEnumerator DepleteShadowBar()
+    {
+        float elapsedTime = 0f;
+
+        while (elapsedTime < warningStartDelay + warningDuration)
+        {
+            if (!isShadowMode)
+            {
+                shadowTimerBar.gameObject.SetActive(false);
+                yield break;
+            }
+
+            shadowTimerBar.value = 1f - (elapsedTime / (warningStartDelay + warningDuration)); // Depletes fully over time
+
+            elapsedTime += Time.deltaTime;
+            yield return null;
+        }
+
+        shadowTimerBar.gameObject.SetActive(false); // Hide UI when shadow state ends
     }
 
     private IEnumerator ShowWarningEffect()

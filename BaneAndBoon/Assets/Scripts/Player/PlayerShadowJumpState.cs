@@ -41,6 +41,7 @@ public class PlayerShadowJumpState : PlayerState
             player.StartCoroutine("BusyFor", .1f);
             player.switchManager.Invoke("SwitchfromShadowtoLight", 0);
             stateMachine.ChangeState(player.idleState);
+            player.Death();
         }
         if (xInput != 0)
         {
