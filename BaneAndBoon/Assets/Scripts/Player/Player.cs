@@ -116,7 +116,7 @@ public class Player : MonoBehaviour
     {
         stateMachine.currentState.UpdateState();
         dashCooldownTimer -= Time.deltaTime;
-        if(transform.position.y < -10f)
+        if(transform.position.y < -20f)
         {
             Death();
         }
